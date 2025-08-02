@@ -129,14 +129,17 @@ function imagens(tipo,personagem,status){
   return(sprite)
 }
 //--------------------------------------------- Executando o jogo -----------------------------------
+let lastTime = 0;
+function game(currentTime) {
+   const deltaTime = (currentTime - lastTime) / 1000;
+  lastTime = currentTime;
 
-function game() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   ctx.fillStyle = "#00f";
 
-  camera.update();
-  camera.draw();
+  camera.update(deltaTime);
+  camera.draw(deltaTime);
 
   if (player.life <= 0) {
     document.querySelector("#gameOver").classList.remove("hidden");

@@ -46,23 +46,25 @@ class Player {
 
     this.inverter = inverter;
   }
-  update() {
+  update(deltaTime) {
+    const velocidade = this.speed * deltaTime * 60;
+
     // movimentação
     if (this.direction.cima) {
       this.spriteImage = this.imagemWalk;
-      this.position.y -= this.speed;
+      this.position.y -= velocidade;
     }
     if (this.direction.baixo) {
       this.spriteImage = this.imagemWalk;
-      this.position.y += this.speed;
+      this.position.y += velocidade;
     }
     if (this.direction.esquerda) {
       this.spriteImage = this.imagemWalk;
-      this.position.x -= this.speed;
+      this.position.x -= velocidade;
     }
     if (this.direction.direita) {
       this.spriteImage = this.imagemWalk;
-      this.position.x += this.speed;
+      this.position.x += velocidade;
     }
     if (
       !(
@@ -109,57 +111,34 @@ class Player {
         audioTiro.play();
         audioTiro.volume = 0.1;
 
-        if (!this.inverter) {
-          municao.push(
-            new Tiro({
-              width: 10,
-              position: {
-                x: player.arma.x + player.arma.width,
-                y: player.arma.y,
-              },
-              from: {
-                x: player.arma.x + player.arma.width,
-                y: player.arma.y,
-              },
-              to: {
-                x: this.arma.mira.x + camera.position.x,
-                y: this.arma.mira.y + camera.position.y,
-              },
-              speed: {
-                x: 10,
-                y: 10,
-              },
-              ativo: true,
-              dano: 20,
-            })
-          );
-          this.delayTiro = 0;
-        } else {
-          municao.push(
-            new Tiro({
-              width: 10,
-              position: {
-                x: player.arma.x - player.arma.width,
-                y: player.arma.y,
-              },
-              from: {
-                x: player.arma.x - player.arma.width,
-                y: player.arma.y,
-              },
-              to: {
-                x: this.arma.mira.x + camera.position.x,
-                y: this.arma.mira.y + camera.position.y,
-              },
-              speed: {
-                x: 10,
-                y: 5,
-              },
-              ativo: true,
-              dano: 20,
-            })
-          );
-          this.delayTiro = 0;
-        }
+        municao.push(
+          new Tiro({
+            width: 10,
+            position: {
+              x: !this.inverter
+                ? player.arma.x + player.arma.width
+                : player.arma.x - player.arma.width,
+              y: player.arma.y,
+            },
+            from: {
+              x: !this.inverter
+                ? player.arma.x + player.arma.width
+                : player.arma.x - player.arma.width,
+              y: player.arma.y,
+            },
+            to: {
+              x: this.arma.mira.x + camera.position.x,
+              y: this.arma.mira.y + camera.position.y,
+            },
+            speed: {
+              x: 10,
+              y: 10,
+            },
+            ativo: true,
+            dano: 20,
+          })
+        );
+        this.delayTiro = 0;
       } else {
         this.delayTiro++;
       }
@@ -236,7 +215,7 @@ class Player {
       ctx.drawImage(
         this.arma.imagem,
         canvas.width - this.arma.x,
-        this.arma.y ,
+        this.arma.y,
         this.arma.width,
         this.arma.height
       );
@@ -267,9 +246,9 @@ class Tiro {
     this.ativo = ativo;
     this.dano = dano;
   }
-  update() {
+  update(deltaTime) {
     if (Math.abs(this.from.x - this.to.x) > Math.abs(this.from.y - this.to.y)) {
-      this.speed.x = 10
+      this.speed.x = 10;
       this.speed.y =
         (Math.abs(this.from.y - this.to.y) * this.speed.x) /
         Math.abs(this.from.x - this.to.x);
@@ -299,8 +278,8 @@ class Tiro {
     }
 
     if (this.ativo) {
-      this.position.x += this.speed.x;
-      this.position.y += this.speed.y;
+      this.position.x += this.speed.x * deltaTime * 60;
+      this.position.y += this.speed.y * deltaTime * 60;
     }
 
     for (let i = 0; i < monsters.length; i++) {
@@ -377,27 +356,22 @@ class Camera {
       camera.position.y = mapa.height - camera.height;
     }
   }
-  draw() {
+  draw(deltaTime) {
     ctx.save();
     ctx.translate(-camera.position.x, -camera.position.y);
 
     ctx.drawImage(background, mapa.x, mapa.y, mapa.width, mapa.height);
 
-    ctx.shadowColor = "rgba(0,0,0,0.5)";
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 10;
-    ctx.shadowBlur = 10;
-
-    player.update();
-    player.draw();
+    player.update(deltaTime);
+    player.draw(deltaTime);
 
     for (let i = 0; i < monsters.length; i++) {
       monsters[i].draw();
-      monsters[i].update();
+      monsters[i].update(deltaTime);
     }
     for (let i = 0; i < municao.length; i++) {
-      municao[i].draw();
-      municao[i].update(this);
+      municao[i].draw(deltaTime);
+      municao[i].update(deltaTime);
     }
     ctx.restore();
   }
@@ -439,34 +413,38 @@ class Monster {
     this.scale = scale;
     this.inverter = inverter;
   }
-  update() {
+  update(deltaTime) {
     // Movimento
+    if (isNaN(deltaTime)) deltaTime = 0;
+    const velocidade = this.speed * deltaTime * 60;
+    // console.log({s: this.speed, d: deltaTime, velocidade : velocidade})
+
     if (this.position.x > player.position.x) {
       this.spriteImage = this.imagemWalk;
-      this.position.x -= this.speed;
+      this.position.x -= velocidade;
     }
     if (this.position.x < player.position.x) {
       this.spriteImage = this.imagemWalk;
-      this.position.x += this.speed;
+      this.position.x += velocidade;
     }
 
     if (this.mob == "Eye") {
       if (this.position.y > player.position.y) {
         this.spriteImage = this.imagemWalk;
-        this.position.y -= this.speed;
+        this.position.y -= velocidade;
       }
       if (this.position.y < player.position.y) {
         this.spriteImage = this.imagemWalk;
-        this.position.y += this.speed;
+        this.position.y += velocidade;
       }
     } else {
       if (this.position.y + this.height > player.position.y + player.height) {
         this.spriteImage = this.imagemWalk;
-        this.position.y -= this.speed;
+        this.position.y -= velocidade;
       }
       if (this.position.y + this.height < player.position.y + player.height) {
         this.spriteImage = this.imagemWalk;
-        this.position.y += this.speed;
+        this.position.y += velocidade;
       }
     }
 
