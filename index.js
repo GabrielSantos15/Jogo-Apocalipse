@@ -78,7 +78,7 @@ const player = new Player({
   arma: {
     width: 100,
     height: 30,
-    imagemSrc: "imagens/armas/PNG/shotgun.png",
+    imagemSrc: "imagens/armas/PNG/rifle.png",
     dano: 20,
     mira: {
       img: "imagens/armas/mira.png",

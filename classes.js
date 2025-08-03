@@ -491,7 +491,7 @@ class Monster {
       // criando mobs
       const mobRandom = Math.random() * 100;
 
-      if (monsters.length <= 30) {
+      if (monsters.length <= 20) {
         if (mobRandom <= 50) {
           // cria 1 esqueleto
           monsters.push(skeleton());

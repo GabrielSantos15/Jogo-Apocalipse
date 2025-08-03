@@ -1,8 +1,8 @@
 let velocity = 2
 
 setInterval(()=>{
-  if (velocity < 5) velocity+=0.3
-},30000)
+  if (velocity < 7) velocity+=0.3
+},15000)
 
 const skeleton = () => {
   return new Monster({
