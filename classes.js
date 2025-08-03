@@ -415,7 +415,6 @@ class Monster {
   }
   update(deltaTime) {
     // Movimento
-    if (isNaN(deltaTime)) deltaTime = 0;
     const velocidade = this.speed * deltaTime * 60;
     // console.log({s: this.speed, d: deltaTime, velocidade : velocidade})
 

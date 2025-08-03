@@ -130,7 +130,7 @@ function imagens(tipo,personagem,status){
 }
 //--------------------------------------------- Executando o jogo -----------------------------------
 let lastTime = 0;
-function game(currentTime) {
+function game(currentTime = 0) {
    const deltaTime = (currentTime - lastTime) / 1000;
   lastTime = currentTime;
 
